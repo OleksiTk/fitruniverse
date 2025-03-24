@@ -1,42 +1,31 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Стилі для контейнера карти */
+.map-container {
+  height: 400px; /* Висота карти */
+  width: 100%; /* Ширина карти займає 100% батьківського елемента */
+  max-width: 600px; /* Максимальна ширина карти */
+  margin: 0 auto; /* Центрування карти по горизонталі */
+  z-index: 1; /* Задаємо бажаний z-index */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Для маркерів на карті */
+.leaflet-marker-icon {
+  width: 32px;
+  height: 32px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Якщо хочете додати додаткові стилі для ліній маршруту */
+.leaflet-polyline {
+  opacity: 0.7;
+  weight: 3px;
+  color: blue; /* Колір лінії маршруту */
+}
+.map-marker {
+  position: relative;
+  z-index: 2; /* Зменшуємо z-index для маркера */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+/* Стиль для шляху */
+.map-path {
+  position: relative;
+  z-index: 0; /* Задаємо менший z-index для шляху */
 }

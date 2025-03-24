@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,7 +12,9 @@ import Training from "./pages/Training";
 import RunSummary from "./pages/RunSummary";
 import Progress from "./pages/Progress";
 import NotFound from "./pages/NotFound";
-
+import "../src/css/style.css";
+import Profile from "./pages/Profile";
+import SignUp from "./pages/SingUp";
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -22,7 +23,7 @@ const App = () => {
 
   // Check if user is logged in from localStorage
   useEffect(() => {
-    const userProfile = localStorage.getItem('userProfile');
+    const userProfile = localStorage.getItem("userProfile");
     if (userProfile) {
       setIsLoggedIn(true);
     }
@@ -42,6 +43,8 @@ const App = () => {
             <Route path="/training" element={<Training />} />
             <Route path="/run-summary" element={<RunSummary />} />
             <Route path="/progress" element={<Progress />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/singup" element={<SignUp />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
