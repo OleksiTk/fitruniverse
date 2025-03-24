@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -169,7 +168,12 @@ const ProfileSetup = () => {
                       variant="outline"
                       size="sm"
                       leftIcon={<Camera className="h-4 w-4" />}
-                      onClick={() => document.querySelector('input[type="file"]')?.click()}
+                      onClick={() => {
+                        const fileInput = document.querySelector('input[type="file"]');
+                        if (fileInput instanceof HTMLElement) {
+                          fileInput.click();
+                        }
+                      }}
                     >
                       {formData.profileImage ? 'Change Photo' : 'Upload Photo'}
                     </Button>
