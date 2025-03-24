@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Index from "./pages/Index";
 import Register from "./pages/Register";
+import SignUp from "./pages/SignUp";
 import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import Training from "./pages/Training";
@@ -38,6 +39,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/profile-setup" element={<ProfileSetup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/training" element={<Training />} />
