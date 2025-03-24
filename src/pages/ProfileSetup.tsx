@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -7,6 +8,15 @@ import { toast } from "sonner";
 import { signInWithGoogle, doc } from "../firebase"; // Імпортуємо функцію для Google login
 import { getAuth } from "firebase/auth";
 import { saveUserProfile } from "../firebase";
+=======
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Header from '@/components/Header';
+import Button from '@/components/Button';
+import { Camera, Trash2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
+
+>>>>>>> 0daf18b36680564682e66deb5ec145706f5f21ee
 interface FormData {
   profileImage: string | null;
   age: string;
@@ -188,9 +198,18 @@ const ProfileSetup = () => {
                       variant="outline"
                       size="sm"
                       leftIcon={<Camera className="h-4 w-4" />}
+<<<<<<< HEAD
                       onClick={() =>
                         document.querySelector('input[type="file"]')?.click()
                       }
+=======
+                      onClick={() => {
+                        const fileInput = document.querySelector('input[type="file"]');
+                        if (fileInput instanceof HTMLElement) {
+                          fileInput.click();
+                        }
+                      }}
+>>>>>>> 0daf18b36680564682e66deb5ec145706f5f21ee
                     >
                       {formData.profileImage ? "Change Photo" : "Upload Photo"}
                     </Button>

@@ -6,11 +6,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Index from "./pages/Index";
 import Register from "./pages/Register";
+import SignUp from "./pages/SignUp";
 import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import Training from "./pages/Training";
 import RunSummary from "./pages/RunSummary";
 import Progress from "./pages/Progress";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import "../src/css/style.css";
 import Profile from "./pages/Profile";
@@ -38,13 +40,17 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/profile-setup" element={<ProfileSetup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/training" element={<Training />} />
             <Route path="/run-summary" element={<RunSummary />} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/profile" element={<Profile />} />
+<<<<<<< HEAD
             <Route path="/singup" element={<SignUp />} />
+=======
+>>>>>>> 0daf18b36680564682e66deb5ec145706f5f21ee
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
