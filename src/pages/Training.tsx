@@ -19,7 +19,7 @@ import "../App.css";
 import { LatLng } from "leaflet";
 import { useDispatch, useSelector } from "react-redux";
 import { pushValueState } from "@/state/state.slice";
-
+import L from "leaflet";
 const Training = () => {
   const dispatch = useDispatch();
   const longitude = useSelector((state: any) => state.checkPosition.longitude);
@@ -34,7 +34,12 @@ const Training = () => {
 
   const [isPaused, setIsPaused] = useState(false);
   const [confirmStop, setConfirmStop] = useState(false);
-
+  const customIcon = new L.Icon({
+    iconUrl: "/person.png", // Шлях до зображення маркера
+    iconSize: [32, 32], // Розміри іконки
+    iconAnchor: location, // Точка на іконці, яка буде прив'язана до координат
+    popupAnchor: [0, -32], // Розташування попапу відносно маркера
+  });
   useEffect(() => {
     if (isRunning) {
       const interval = setInterval(() => {
@@ -109,7 +114,11 @@ const Training = () => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             {/* Маркер на карті */}
-            <Marker position={location} className="map-marker">
+            <Marker
+              position={location}
+              className="map-marker"
+              icon={customIcon}
+            >
               <Popup>I'm running here!</Popup>
             </Marker>
             {/* Шлях на карті */}

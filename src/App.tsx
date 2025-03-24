@@ -47,10 +47,7 @@ const App = () => {
             <Route path="/run-summary" element={<RunSummary />} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/profile" element={<Profile />} />
-<<<<<<< HEAD
             <Route path="/singup" element={<SignUp />} />
-=======
->>>>>>> 0daf18b36680564682e66deb5ec145706f5f21ee
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
