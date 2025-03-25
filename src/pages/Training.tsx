@@ -62,7 +62,7 @@ const Training = () => {
         } else {
           console.error("Geolocation is not supported by this browser.");
         }
-      }, 1000); // Оновлюємо координати кожну секунду
+      }, 500); // Оновлюємо координати кожну секунду
 
       return () => clearInterval(interval); // Очищаємо interval при зупинці
     }
