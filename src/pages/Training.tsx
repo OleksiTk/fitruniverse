@@ -103,7 +103,7 @@ const Training = () => {
             }
           );
         }
-      }, 1000); // Update every second
+      }, 900); // Update every second
     } else {
       clearInterval(interval); // Clear the interval when not running
     }
