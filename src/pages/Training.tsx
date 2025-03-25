@@ -114,7 +114,7 @@ const Training = () => {
               }
 
               // Якщо відстань змінилася більше ніж на 0.1 метра, обчислюємо швидкість
-              if (Number(dist.toFixed(2)) > 1) {
+              if (dist > 1) {
                 console.log("timeref", timerRef);
 
                 // Переводимо час в години
