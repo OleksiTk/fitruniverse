@@ -13,7 +13,7 @@ import {
   Popup,
   Polyline,
 } from "react-leaflet";
-import "leaflet/dist/leaflet.css"; // Don't forget to import Leaflet styles
+import "leaflet/dist/leaflet.css";
 import "../App.css";
 import L from "leaflet";
 import RunMetrics from "@/components/RunMetrics";
@@ -86,15 +86,23 @@ const Training = () => {
                 latitude,
                 longitude
               );
-              if (dist > 1) {
-                // Distance threshold of 1 meter
+
+              // Check if the movement is significant (above a certain threshold, e.g., 5 meters)
+              if (dist > 5) {
                 setPath((prevPath) => [...prevPath, [latitude, longitude]]);
                 setDistance((prev) => prev + dist);
               }
 
               // Calculate speed and calories
               const timeElapsed = elapsedTime; // Time in seconds
-              setSpeed(calculateSpeed(distance, timeElapsed) || 0);
+              const calculatedSpeed =
+                calculateSpeed(distance, timeElapsed) || 0;
+              setSpeed(calculatedSpeed);
+
+              // If no movement, set speed to 0
+              if (dist <= 5) {
+                setSpeed(0);
+              }
 
               setElapsedTime((prevTime) => prevTime + 1); // Increment time by 1 second
             },
@@ -103,7 +111,7 @@ const Training = () => {
             }
           );
         }
-      }, 900); // Update every second
+      }, 1000); // Update every second
     } else {
       clearInterval(interval); // Clear the interval when not running
     }

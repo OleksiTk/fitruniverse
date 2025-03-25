@@ -43,7 +43,7 @@ const Index = () => {
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              <span> Your Runs.</span>
+              <span>Track Your Runs.</span>
               <br />
               <span>Achieve Your Goals.</span>
             </h1>
