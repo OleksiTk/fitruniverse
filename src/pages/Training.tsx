@@ -102,7 +102,7 @@ const Training = () => {
                 longitude
               );
 
-              if (dist >= 1) {
+              if (dist >= 0) {
                 // Only update if there's movement greater than or equal to 1 meter
                 setPath((prevPath) => [...prevPath, [latitude, longitude]]);
                 setDistance((prev) => prev + dist);
