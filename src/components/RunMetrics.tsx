@@ -56,7 +56,7 @@ const RunMetrics = ({
     {
       label: "Distance",
       value: distance.toFixed(2),
-      unit: "km",
+      unit: "m",
       icon: <Map className="h-5 w-5 text-fitness-primary" />,
     },
     {

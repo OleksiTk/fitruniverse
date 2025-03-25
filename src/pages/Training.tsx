@@ -36,9 +36,11 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 // Function to calculate speed in km/h
-const calculateSpeed = (distance, time) => {
-  if (distance < 0 && time > 0) {
-    return (distance / time) * 3.6; // speed in km/h (converted from m/s)
+const calculateSpeed = (distance, timeInSeconds) => {
+  if (distance > 0 && timeInSeconds > 0) {
+    // Correct speed calculation in km/h
+    let km = distance / 1000 / (timeInSeconds / 3600);
+    return km.toFixed(2); // speed in km/h
   }
   return 0;
 };
@@ -109,13 +111,16 @@ const Training = () => {
               }
 
               // Only calculate speed if distance has changed
-              if (dist > 0) {
+              if (dist > 0.1) {
                 const timeElapsedInHours = timerRef.current / 3600; // Convert time from seconds to hours
                 const newSpeed = calculateSpeed(distance, timeElapsedInHours);
                 setSpeed(newSpeed);
 
                 // Update calories
                 setCalories(calculateCalories(distance));
+              } else {
+                // Якщо швидкість не можна обчислити (наприклад, відстань або час дуже маленькі)
+                setSpeed(0); // Встановлюємо швидкість в 0
               }
             },
             (error) => {
@@ -145,6 +150,7 @@ const Training = () => {
 
   const handlePauseRun = () => {
     setIsPaused(!isPaused);
+    setIsRunning(false);
     toast(isPaused ? "Run resumed" : "Run paused");
   };
 
