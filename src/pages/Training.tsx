@@ -36,9 +36,10 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 // Function to calculate speed in km/h
-const calculateSpeed = (distance, time) => {
-  if (distance < 0 && time > 0) {
-    return (distance / time) * 3.6; // speed in km/h (converted from m/s)
+const calculateSpeed = (distance, timeInSeconds) => {
+  if (distance > 0 && timeInSeconds > 0) {
+    // Correct speed calculation in km/h
+    return distance / 1000 / (timeInSeconds / 3600); // speed in km/h
   }
   return 0;
 };
@@ -72,9 +73,6 @@ const Training = () => {
     popupAnchor: [0, -32],
   });
 
-  // Track previous distance to detect movement
-  const [prevDistance, setPrevDistance] = useState(0);
-
   // Using useRef for timer to avoid reset on re-renders
   const timerRef = useRef(0); // Keeps track of time elapsed across re-renders
 
@@ -101,21 +99,41 @@ const Training = () => {
                 latitude,
                 longitude
               );
-
-              if (dist >= 1) {
+              console.log(
+                lastPosition[0],
+                lastPosition[1],
+                latitude,
+                longitude,
+                dist
+              );
+              console.log(`Відстань між точками: ${dist.toFixed(2)} метри`);
+              if (dist >= 0.1) {
                 // Only update if there's movement greater than or equal to 1 meter
                 setPath((prevPath) => [...prevPath, [latitude, longitude]]);
-                setDistance((prev) => prev + dist);
+                setDistance((prev) => prev + dist); // Update distance by adding the new distance
               }
 
-              // Only calculate speed if distance has changed
-              if (dist > 0) {
-                const timeElapsedInHours = timerRef.current / 3600; // Convert time from seconds to hours
-                const newSpeed = calculateSpeed(distance, timeElapsedInHours);
-                setSpeed(newSpeed);
+              // Якщо відстань змінилася більше ніж на 0.1 метра, обчислюємо швидкість
+              if (Number(dist.toFixed(2)) > 1) {
+                console.log("timeref", timerRef);
 
-                // Update calories
+                // Переводимо час в години
+                const timeElapsedInHours = timerRef.current / 3600; // Час у годинах
+                console.log("Переведений час у години", timeElapsedInHours);
+
+                // Якщо час більший за нуль, обчислюємо швидкість
+                const newSpeed = calculateSpeed(dist, timerRef.current); // Використовуємо поточний час
+                const roundedSpeed = newSpeed.toFixed(2); // Округлюємо до 2 знаків після коми
+                console.log(`Швидкість: ${roundedSpeed} км/год`);
+
+                // Оновлюємо швидкість в стані
+                setSpeed(parseFloat(roundedSpeed));
+
+                // Оновлюємо калорії
                 setCalories(calculateCalories(distance));
+              } else {
+                // Якщо швидкість не можна обчислити (наприклад, відстань або час дуже маленькі)
+                setSpeed(0); // Встановлюємо швидкість в 0
               }
             },
             (error) => {
