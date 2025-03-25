@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Index from "./pages/Index";
 import Register from "./pages/Register";
-import SignUp from "./pages/SignUp";
+
 import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import Training from "./pages/Training";
@@ -15,7 +15,7 @@ import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import "../src/css/style.css";
-import Profile from "./pages/Profile";
+
 import SignUp from "./pages/SingUp";
 const queryClient = new QueryClient();
 

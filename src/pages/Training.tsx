@@ -47,10 +47,12 @@ const Training = () => {
           // Запит геолокації
           navigator.geolocation.getCurrentPosition(
             (position) => {
-              // Отримуємо координати
               const { latitude, longitude } = position.coords;
               setLocation([latitude, longitude]); // Оновлюємо місце
               dispatch(pushValueState({ latitude, longitude })); // Зберігаємо координати в Redux
+
+              // Додаємо нові координати в масив шляху
+              setPath((prevPath) => [...prevPath, [latitude, longitude]]);
               console.log("succes", latitude, longitude);
             },
             (error) => {
@@ -64,7 +66,7 @@ const Training = () => {
 
       return () => clearInterval(interval); // Очищаємо interval при зупинці
     }
-  }, [isRunning]);
+  }, [isRunning]); // Цей ефект працює, коли запускна активність (isRunning) змінюється
 
   const handleStartRun = () => {
     startRun();
@@ -106,7 +108,7 @@ const Training = () => {
         <div className="relative w-full h-[50vh] md:h-[50vh]">
           <MapContainer
             center={location}
-            zoom={13}
+            zoom={18}
             className="map-container" // Додаємо клас для контейнера карти
           >
             <TileLayer
