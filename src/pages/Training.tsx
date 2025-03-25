@@ -13,7 +13,7 @@ import {
   Popup,
   Polyline,
 } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import "leaflet/dist/leaflet.css"; // Не забудьте імпортувати стилі для Leaflet
 import "../App.css";
 import L from "leaflet";
 import RunMetrics from "@/components/RunMetrics";
@@ -32,30 +32,38 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c * 1000; // Distance in meters
+  return R * c; // Distance in km
 };
 
-// Function to calculate speed in km/h
+// Function to calculate speed
 const calculateSpeed = (distance, time) => {
   if (time > 0) {
-    return (distance / time) * 3.6; // speed in km/h (converted from m/s)
+    return distance / time; // speed in km/h
   }
   return 0;
 };
 
+// Function to calculate calories based on distance
+const calculateCalories = (distance, weight = 70) => {
+  const caloriesPerKm = 0.9; // Rough estimate for a person of average weight (70kg)
+  return distance * caloriesPerKm * (weight / 70);
+};
+
 const Training = () => {
   const dispatch = useDispatch();
-  const longitude = useSelector((state) => state.checkPosition.longitude);
-  const latitude = useSelector((state) => state.checkPosition.latitude);
+  const longitude = useSelector((state: any) => state.checkPosition.longitude);
+  const latitude = useSelector((state: any) => state.checkPosition.latitude);
   const [location, setLocation] = useState([latitude, longitude]);
   const [path, setPath] = useState([location]); // Track path
   const [isRunningF, setIsRunning] = useState(false);
   const navigate = useNavigate();
   const [showFullMetrics, setShowFullMetrics] = useState(false);
+  const [startTime, setStartTime] = useState(null);
   const [distance, setDistance] = useState(0);
   const [speed, setSpeed] = useState(0);
   const [calories, setCalories] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0); // Time in seconds
+
   const [isPaused, setIsPaused] = useState(false);
   const [confirmStop, setConfirmStop] = useState(false);
 
@@ -66,11 +74,9 @@ const Training = () => {
     popupAnchor: [0, -32],
   });
 
-  // Timer interval to update every second
   useEffect(() => {
-    let interval;
     if (isRunningF) {
-      interval = setInterval(() => {
+      const interval = setInterval(() => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -78,48 +84,44 @@ const Training = () => {
               setLocation([latitude, longitude]);
               dispatch(pushValueState({ latitude, longitude }));
 
-              // Check if the location has changed significantly (avoid recalculating if standing still)
-              const lastPosition = path[path.length - 1];
-              const dist = calculateDistance(
-                lastPosition[0],
-                lastPosition[1],
-                latitude,
-                longitude
-              );
-
-              // Check if the movement is significant (above a certain threshold, e.g., 5 meters)
-              if (dist > 5) {
-                setPath((prevPath) => [...prevPath, [latitude, longitude]]);
-                setDistance((prev) => prev + dist);
+              // Calculate distance if there are at least two points
+              if (path.length > 1) {
+                const lastPosition = path[path.length - 1];
+                const dist = calculateDistance(
+                  lastPosition[0],
+                  lastPosition[1],
+                  latitude,
+                  longitude
+                );
+                setDistance((prev) => prev + dist); // Add new distance to total distance
               }
+
+              // Add new coordinates to path
+              setPath((prevPath) => [...prevPath, [latitude, longitude]]);
 
               // Calculate speed and calories
-              const timeElapsed = elapsedTime; // Time in seconds
-              const calculatedSpeed =
-                calculateSpeed(distance, timeElapsed) || 0;
-              setSpeed(calculatedSpeed);
-
-              // If no movement, set speed to 0
-              if (dist <= 5) {
-                setSpeed(0);
+              if (startTime) {
+                const timeElapsed = (Date.now() - startTime) / 1000 / 60 / 60; // Time in hours
+                setElapsedTime((prevTime) => prevTime + 1); // Increase time in seconds
+                setSpeed(calculateSpeed(distance, timeElapsed) || 0);
+                setCalories(calculateCalories(distance) || 0);
               }
-
-              setElapsedTime((prevTime) => prevTime + 1); // Increment time by 1 second
             },
             (error) => {
               console.error("Error getting geolocation:", error);
             }
           );
+        } else {
+          console.error("Geolocation is not supported by this browser.");
         }
-      }, 1000); // Update every second
-    } else {
-      clearInterval(interval); // Clear the interval when not running
-    }
+      }, 1000); // Update position every second
 
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [isRunningF, elapsedTime, distance, path]);
+      return () => clearInterval(interval);
+    }
+  }, [isRunningF, path, distance, startTime]);
 
   const handleStartRun = () => {
+    setStartTime(Date.now());
     setDistance(0);
     setSpeed(0);
     setCalories(0);
@@ -143,6 +145,8 @@ const Training = () => {
     }
 
     // Save run data
+
+    // Navigate to summary page
     navigate("/run-summary");
   };
 
@@ -153,6 +157,7 @@ const Training = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
+
       <div className="pt-20 pb-24">
         {/* Map Section */}
         <div className="relative w-full h-[50vh] md:h-[50vh]">
@@ -161,9 +166,11 @@ const Training = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
+            {/* Marker */}
             <Marker position={location} icon={customIcon}>
               <Popup>I'm running here!</Popup>
             </Marker>
+            {/* Path */}
             <Polyline positions={path} className="map-path" />
           </MapContainer>
         </div>
@@ -191,16 +198,30 @@ const Training = () => {
               </button>
             </div>
 
-            <RunMetrics
-              distance={distance}
-              duration={elapsedTime}
-              pace={speed}
-              speed={speed}
-              calories={calories}
-              cadence={0} // Example placeholder
-              elevation={0} // Example placeholder
-              compact={!showFullMetrics}
-            />
+            <div className="animate-fade-in">
+              <RunMetrics
+                distance={
+                  typeof distance === "number" && !isNaN(distance)
+                    ? distance
+                    : "0.00"
+                }
+                duration={elapsedTime}
+                pace={
+                  typeof speed === "number" && !isNaN(speed) ? speed : "0.00"
+                }
+                speed={
+                  typeof speed === "number" && !isNaN(speed) ? speed : "0.00"
+                }
+                calories={
+                  typeof calories === "number" && !isNaN(calories)
+                    ? calories
+                    : "0.00"
+                }
+                cadence={0} // Example placeholder for cadence
+                elevation={0} // Example placeholder for elevation
+                compact={!showFullMetrics}
+              />
+            </div>
           </div>
         </div>
 
