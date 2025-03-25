@@ -102,16 +102,16 @@ const Training = () => {
                 longitude
               );
 
-              if (dist > 1) {
-                // Only update if there's movement greater than 1 meter
+              if (dist >= 1) {
+                // Only update if there's movement greater than or equal to 1 meter
                 setPath((prevPath) => [...prevPath, [latitude, longitude]]);
-                setDistance((prev) => prev + dist);
+                setDistance((prev) => prev + dist); // Update distance by adding the new distance
               }
 
               // Only calculate speed if distance has changed
               if (dist > 0) {
-                const timeElapsedInHours = timerRef.current / 3600; // Convert time from seconds to hours
-                const newSpeed = calculateSpeed(distance, timeElapsedInHours);
+                const timeElapsedInSeconds = timerRef.current; // Time elapsed in seconds
+                const newSpeed = calculateSpeed(dist, timeElapsedInSeconds); // Use `dist` and `timeElapsedInSeconds`
                 setSpeed(newSpeed);
 
                 // Update calories
