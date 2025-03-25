@@ -84,7 +84,7 @@ const Training = () => {
               setLocation([latitude, longitude]);
               dispatch(pushValueState({ latitude, longitude }));
 
-              // Calculate distance if there are at least two points
+              // Обчислюємо відстань, якщо є хоча б дві точки
               if (path.length > 1) {
                 const lastPosition = path[path.length - 1];
                 const dist = calculateDistance(
@@ -93,16 +93,26 @@ const Training = () => {
                   latitude,
                   longitude
                 );
-                setDistance((prev) => prev + dist); // Add new distance to total distance
+                setDistance((prev) => prev + dist); // Додаємо нову відстань до загальної
               }
 
-              // Add new coordinates to path
-              setPath((prevPath) => [...prevPath, [latitude, longitude]]);
+              // Додаємо нові координати до шляху, якщо зміна координат є суттєвою
+              if (
+                path.length === 0 ||
+                calculateDistance(
+                  path[path.length - 1][0],
+                  path[path.length - 1][1],
+                  latitude,
+                  longitude
+                ) > 0.001
+              ) {
+                setPath((prevPath) => [...prevPath, [latitude, longitude]]);
+              }
 
-              // Calculate speed and calories
+              // Обчислюємо швидкість та калорії
               if (startTime) {
-                const timeElapsed = (Date.now() - startTime) / 1000 / 60 / 60; // Time in hours
-                setElapsedTime((prevTime) => prevTime + 1); // Increase time in seconds
+                const timeElapsed = (Date.now() - startTime) / 1000 / 60 / 60; // Час у годинах
+                setElapsedTime((prevTime) => prevTime + 1); // Збільшуємо час у секундах
                 setSpeed(calculateSpeed(distance, timeElapsed) || 0);
                 setCalories(calculateCalories(distance) || 0);
               }
@@ -114,7 +124,7 @@ const Training = () => {
         } else {
           console.error("Geolocation is not supported by this browser.");
         }
-      }, 1000); // Update position every second
+      }, 1000); // Оновлюємо кожну секунду
 
       return () => clearInterval(interval);
     }
