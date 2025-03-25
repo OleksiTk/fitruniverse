@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Button from "@/components/Button";
-import { Play, Pause, StopCircle, ChevronUp, ChevronDown } from "lucide-react";
+import { Play, Pause, StopCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { pushValueState } from "@/state/state.slice";
@@ -37,7 +37,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
 // Function to calculate speed in km/h
 const calculateSpeed = (distance, time) => {
-  if (distance > 0 && time > 0) {
+  if (distance < 0 && time > 0) {
     return (distance / time) * 3.6; // speed in km/h (converted from m/s)
   }
   return 0;
@@ -105,13 +105,13 @@ const Training = () => {
               if (dist >= 1) {
                 // Only update if there's movement greater than or equal to 1 meter
                 setPath((prevPath) => [...prevPath, [latitude, longitude]]);
-                setDistance((prev) => prev + dist); // Update distance by adding the new distance
+                setDistance((prev) => prev + dist);
               }
 
               // Only calculate speed if distance has changed
               if (dist > 0) {
-                const timeElapsedInSeconds = timerRef.current; // Time elapsed in seconds
-                const newSpeed = calculateSpeed(dist, timeElapsedInSeconds); // Use `dist` and `timeElapsedInSeconds`
+                const timeElapsedInHours = timerRef.current / 3600; // Convert time from seconds to hours
+                const newSpeed = calculateSpeed(distance, timeElapsedInHours);
                 setSpeed(newSpeed);
 
                 // Update calories
