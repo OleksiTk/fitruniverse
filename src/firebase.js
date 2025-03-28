@@ -7,7 +7,15 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  collection,
+  addDoc,
+  setDoc,
+  getDoc,
+} from "firebase/firestore";
+
 export let nameProfile = "";
 // Додайте функцію для реєстрації користувача через email та пароль
 const registerWithEmail = async (name, email, password) => {
@@ -116,6 +124,68 @@ const saveUserProfile = async (userData) => {
     throw error;
   }
 };
+//функція дл стоврення рандомних стат
+const creatRandomStats = async () => {
+  try {
+    const statsUser = getAuth().currentUser;
+    if (!statsUser) {
+      throw new Error("User not authenticated");
+    }
+
+    const userRef = doc(db, "StatsRandom", statsUser.uid); // Для кожного користувача створюється окремий документ
+
+    // Генерація тестових даних
+    const randomStats = {
+      running: {
+        distance: Math.floor(Math.random() * 10) + 1, // Відстань у км (1-10 км)
+        time: Math.floor(Math.random() * 60) + 30, // Час бігу (30-90 хв)
+        speed: Math.random() * 12 + 4, // Середня швидкість (4-16 км/год)
+      },
+      heartRate: {
+        min: Math.floor(Math.random() * 40) + 60, // Мінімальний пульс (60-100 уд/хв)
+        max: Math.floor(Math.random() * 30) + 100, // Максимальний пульс (100-130 уд/хв)
+      },
+      calories: Math.floor(Math.random() * 500) + 200, // Калорії (200-700 кал)
+      steps: Math.floor(Math.random() * 10000) + 5000, // Кроки (5000-15000)
+    };
+
+    // Збереження статистики в Firestore
+    await setDoc(
+      userRef,
+      {
+        indicators: randomStats, // Зберігаємо випадкові дані
+      },
+      { merge: true }
+    );
+
+    console.log("User profile saved successfully with random stats!");
+  } catch (error) {
+    console.error("Error saving user profile:", error);
+    throw error;
+  }
+};
+const getRandomStats = async () => {
+  try {
+    const user = getAuth().currentUser;
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
+    const userRef = doc(db, "Stats", user.uid); // Отримуємо документ користувача
+    const userDoc = await getDoc(userRef); // Отримуємо дані документа
+
+    if (userDoc.exists()) {
+      console.log("User profile data:", userDoc.data());
+      return userDoc.data(); // Повертаємо дані користувача
+    } else {
+      console.log("No profile found");
+      return null; // Якщо документ не знайдений, повертаємо null
+    }
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    throw error;
+  }
+};
 // Функція для отримання даних профілю користувача з Firestore
 const getUserProfile = async () => {
   try {
@@ -139,6 +209,35 @@ const getUserProfile = async () => {
     throw error;
   }
 };
+const createStatsProfile = async (userData) => {
+  try {
+    const statsUser = getAuth().currentUser;
+    if (!statsUser) {
+      throw new Error("User not authenticated");
+    }
+
+    // Створення посилання на користувача
+    const userRef = doc(db, "StatsProfile", statsUser.uid);
+
+    // Створення підколекції "statsRecords" для кожного користувача
+    const statsRecordsRef = collection(userRef, "statsRecords");
+
+    // Додавання нового запису зі статистикою та датою
+    const newRecord = {
+      stats: userData,
+      timestamp: new Date(), // Зберігаємо час створення запису
+    };
+
+    // Додаємо новий документ в підколекцію
+    await addDoc(statsRecordsRef, newRecord);
+
+    console.log("New stats record added successfully with timestamp!");
+  } catch (error) {
+    console.error("Error creating stats profile:", error);
+    throw error;
+  }
+};
+
 export const updateUserProfile = async (profileData) => {
   const user = auth.currentUser;
   if (user) {
@@ -156,5 +255,8 @@ export {
   signInWithGoogle,
   db,
   getUserProfile,
+  creatRandomStats,
+  getRandomStats,
+  createStatsProfile,
   saveUserProfile, // Експортуємо функцію для збереження даних профілю
 };

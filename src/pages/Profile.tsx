@@ -23,7 +23,12 @@ import {
   TakeNameGoogle,
   nameProfile,
 } from "../firebase.js";
-import { getAuth } from "firebase/auth";
+import { gapi } from "gapi-script";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import firebase from "firebase/app";
+import "firebase/auth";
+import { creatRandomStats, getRandomStats } from "../firebase.js";
+import { preprocess } from "zod";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -31,6 +36,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState(null);
   const [name, setName] = useState(null);
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -49,8 +55,8 @@ const Profile = () => {
         if (profileData) {
           setUserProfile(profileData); // Set the profile data if available
           setEditedProfile(profileData);
-          console.log(userProfile);
-          setName(nameProfile);
+          console.log(profileData);
+          setName(profileData.name); // Set the name of the user
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -59,18 +65,84 @@ const Profile = () => {
 
     fetchUserProfile(); // Call the function to fetch the profile when the component mounts
   }, []);
+  const CLIENT_ID = import.meta.env.VITE__FITNNES_APP_CLIENT_ID;
 
-  const handleLogout = () => {
-    localStorage.removeItem("userProfile");
-    toast.success("Logged out successfully");
-    navigate("/");
+  // Функція для ініціалізації Google API
+  useEffect(() => {
+    const initializeGoogleAuth = () => {
+      gapi.load("client:auth2", () => {
+        gapi.auth2
+          .init({
+            client_id: CLIENT_ID,
+            scope: "profile email", // Скоупи для доступу до даних профілю користувача
+          })
+          .then(() => {
+            console.log("Google API Initialized");
+            checkIfUserIsSignedIn();
+          })
+          .catch((error) => {
+            console.error("Error initializing Google API:", error);
+          });
+      });
+    };
+
+    // Перевірка чи користувач вже увійшов
+    const checkIfUserIsSignedIn = () => {
+      const googleAuth = gapi.auth2.getAuthInstance();
+      const user = googleAuth.currentUser.get();
+      if (user.isSignedIn()) {
+        const profile = user.getBasicProfile();
+        setUserProfile({
+          id: profile.getId(),
+          name: profile.getName(),
+          email: profile.getEmail(),
+          imageUrl: profile.getImageUrl(),
+        });
+      }
+    };
+
+    // Ініціалізація Google API після завантаження
+    initializeGoogleAuth();
+  }, []);
+
+  // Функція для обробки входу через Google
+  const handleLogin = async () => {
+    try {
+      const googleAuth = gapi.auth2.getAuthInstance();
+      console.log("google auth instance", googleAuth);
+
+      // Оновлюємо статус входу
+      const googleUser = await googleAuth.signIn();
+      console.log("Google User: ", googleUser);
+
+      // Після успішного входу отримуємо профіль
+      const profile = googleUser.getBasicProfile();
+      console.log("User Profile: ", profile);
+
+      // Формуємо новий профіль користувача
+      const newUserProfile = {
+        id: profile.getId(),
+        name: profile.getName(),
+        email: profile.getEmail(),
+        imageUrl: profile.getImageUrl(),
+      };
+
+      console.log("New User Profile: ", newUserProfile);
+
+      // Оновлюємо стан профілю користувача
+      setUserProfile(newUserProfile);
+
+      // Перехід на іншу сторінку після успішного входу
+      navigate("/profile");
+    } catch (error) {
+      console.error("Error during Google login:", error);
+    }
   };
 
   const handleEditToggle = () => {
     if (isEditing) {
       // Save changes
       if (editedProfile) {
-        localStorage.setItem("userProfile", JSON.stringify(editedProfile));
         setUserProfile(editedProfile);
         toast.success("Profile updated successfully");
       }
@@ -102,6 +174,11 @@ const Profile = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("userProfile");
+    toast.success("Logged out successfully");
+    navigate("/");
   };
 
   // Calculate BMI
@@ -347,6 +424,13 @@ const Profile = () => {
                     )}
                   </p>
                 </div>
+
+                <Button onClick={handleLogin} className="w-full">
+                  Google fit
+                </Button>
+                <Button onClick={creatRandomStats} className="w-full">
+                  CREATE RANDOM METRICS
+                </Button>
               </div>
             </CardContent>
           </Card>
