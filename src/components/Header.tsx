@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
     { name: "Dashboard", path: "/dashboard" },
     { name: "Training", path: "/training" },
     { name: "Progress", path: "/progress" },
+    { name: "AI Chat", path: "/ai-chat" },
     { name: "Profile", path: "/profile" },
   ];
 

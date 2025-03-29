@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +15,7 @@ import RunSummary from "./pages/RunSummary";
 import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import AIChat from "./pages/AIChat";
 import "../src/css/style.css";
 
 import SignUp from "./pages/SingUp";
@@ -47,6 +49,7 @@ const App = () => {
             <Route path="/run-summary" element={<RunSummary />} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/ai-chat" element={<AIChat />} />
             <Route path="/singup" element={<SignUp />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
